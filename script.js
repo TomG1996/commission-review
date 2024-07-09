@@ -17,14 +17,14 @@ document.getElementById('paymentForm').addEventListener('submit', function(event
         return;
     }
 
-    const finalPrice = (price * 1.35).toFixed(2);
+    const finalPrice = (price * 1.35).toFixed(2); // Berechne den Endpreis
 
     const payment = {
         name: name,
         price: price,
         type: type,
         date: date,
-        finalPrice: finalPrice,
+        finalPrice: finalPrice, // Füge den Endpreis hinzu
         status: 'Nicht bestätigt'
     };
 
