@@ -55,6 +55,18 @@ app.put('/payments/:id', async (req, res) => {
     }
 });
 
+app.delete('/payments/:id', async (req, res) => {
+    try {
+        const payment = await Payment.findByIdAndDelete(req.params.id);
+        if (!payment) {
+            return res.status(404).send({ message: 'Payment not found' });
+        }
+        res.send({ message: 'Payment deleted successfully' });
+    } catch (error) {
+        res.status(400).send({ message: 'Invalid data', error });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
