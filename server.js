@@ -9,7 +9,9 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-mongoose.connect('mongodb://localhost:27017/paymentDB')
+const dbUri = 'mongodb+srv://TomG:<IchundDu-1996>@review.zqyofix.mongodb.net/?retryWrites=true&w=majority&appName=Review'; // Ersetze durch deinen Verbindungs-String
+
+mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
@@ -18,7 +20,7 @@ const paymentSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     type: { type: String, required: true },
     date: { type: String, required: true },
-    finalPrice: { type: Number, required: true }, // Füge finalPrice zum Schema hinzu
+    finalPrice: { type: Number, required: true },
     status: { type: String, default: 'Nicht bestätigt' }
 });
 
