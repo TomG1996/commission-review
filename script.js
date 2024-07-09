@@ -1,7 +1,7 @@
-// Setze das aktuelle Datum im Datumseingabefeld
 window.addEventListener('load', function() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').value = today;
+    loadPayments();
 });
 
 document.getElementById('paymentForm').addEventListener('submit', function(event) {
@@ -19,6 +19,39 @@ document.getElementById('paymentForm').addEventListener('submit', function(event
 
     const finalPrice = (price * 1.35).toFixed(2);
 
+    const payment = {
+        name: name,
+        price: price,
+        type: type,
+        date: date,
+        finalPrice: finalPrice,
+        status: 'Nicht bestätigt'
+    };
+
+    fetch('http://localhost:3000/payments', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payment)
+    })
+    .then(response => response.json())
+    .then(data => {
+        addPaymentToTable(data);
+        document.getElementById('paymentForm').reset();
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    });
+});
+
+function loadPayments() {
+    fetch('http://localhost:3000/payments')
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(payment => addPaymentToTable(payment));
+    });
+}
+
+function addPaymentToTable(payment) {
     const table = document.getElementById('paymentTable').getElementsByTagName('tbody')[0];
     const newRow = table.insertRow();
 
@@ -30,23 +63,9 @@ document.getElementById('paymentForm').addEventListener('submit', function(event
     const cellStatus = newRow.insertCell(5);
     const cellAction = newRow.insertCell(6);
 
-    cellName.innerText = name;
-    cellPrice.innerText = price.toFixed(2) + ' €';
-    cellType.innerText = type;
-    cellDate.innerText = date;
-    cellFinalPrice.innerText = finalPrice + ' €';
-    cellStatus.innerText = "Nicht bestätigt";
-    cellStatus.classList.add('status-unconfirmed');
-
-    const confirmButton = document.createElement('button');
-    confirmButton.innerText = "Bestätigen";
-    confirmButton.addEventListener('click', function() {
-        cellStatus.innerText = "Bestätigt";
-        cellStatus.classList.remove('status-unconfirmed');
-        cellStatus.classList.add('status-confirmed');
-    });
-    cellAction.appendChild(confirmButton);
-
-    document.getElementById('paymentForm').reset();
-    document.getElementById('date').value = new Date().toISOString().split('T')[0];
-});
+    cellName.innerText = payment.name;
+    cellPrice.innerText = payment.price.toFixed(2) + ' €';
+    cellType.innerText = payment.type;
+    cellDate.innerText = payment.date;
+    cellFinalPrice.innerText = payment.finalPrice + ' €';
+    cellStatus.innerText = payment
