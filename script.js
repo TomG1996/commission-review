@@ -91,5 +91,20 @@ function addPaymentToTable(payment) {
         })
         .catch(error => console.error('Error:', error));
     });
+
+    const deleteButton = document.createElement('button'); // Hinzufügen des Löschbuttons
+    deleteButton.innerText = "Löschen";
+    deleteButton.addEventListener('click', function() {
+        fetch(`http://localhost:3000/payments/${payment._id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(result => {
+            table.deleteRow(newRow.rowIndex);
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
     cellAction.appendChild(confirmButton);
+    cellAction.appendChild(deleteButton); // Löschbutton zur Zeile hinzufügen
 }
