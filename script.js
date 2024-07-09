@@ -40,7 +40,8 @@ document.getElementById('paymentForm').addEventListener('submit', function(event
         addPaymentToTable(data);
         document.getElementById('paymentForm').reset();
         document.getElementById('date').value = new Date().toISOString().split('T')[0];
-    });
+    })
+    .catch(error => console.error('Error:', error));
 });
 
 function loadPayments() {
@@ -48,7 +49,8 @@ function loadPayments() {
     .then(response => response.json())
     .then(data => {
         data.forEach(payment => addPaymentToTable(payment));
-    });
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 function addPaymentToTable(payment) {
@@ -68,4 +70,26 @@ function addPaymentToTable(payment) {
     cellType.innerText = payment.type;
     cellDate.innerText = payment.date;
     cellFinalPrice.innerText = payment.finalPrice + ' €';
-    cellStatus.innerText = payment
+    cellStatus.innerText = payment.status;
+    cellStatus.classList.add(payment.status === 'Bestätigt' ? 'status-confirmed' : 'status-unconfirmed');
+
+    const confirmButton = document.createElement('button');
+    confirmButton.innerText = "Bestätigen";
+    confirmButton.addEventListener('click', function() {
+        fetch(`http://localhost:3000/payments/${payment._id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'Bestätigt' })
+        })
+        .then(response => response.json())
+        .then(updatedPayment => {
+            cellStatus.innerText = updatedPayment.status;
+            cellStatus.classList.remove('status-unconfirmed');
+            cellStatus.classList.add('status-confirmed');
+        })
+        .catch(error => console.error('Error:', error));
+    });
+    cellAction.appendChild(confirmButton);
+}
